@@ -1,0 +1,96 @@
+body {
+    background: #000;
+    margin: 0;
+    padding: 0;
+    color: #bbb;
+    font: 12px Arial, sans-serif;
+}
+
+#header {
+    padding: 16px;
+    border-bottom: 1px solid #888;
+}
+
+#buttonbar {
+    display: inline-block;
+}
+
+#speed {
+    margin-left: 16px;
+    width: 200px;
+    display: inline-block;
+}
+
+#content {
+    padding: 32px;
+}
+
+#templates {
+    display: none;
+}
+
+#stage {
+    float: left;
+}
+
+#palette {
+    margin-left: 632px;
+}
+
+.palette-item {
+    display: block;
+    padding: 3px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    float: left;
+    width: 200px;
+}
+
+.palette-item-selected {
+    background: #305;
+}
+
+.palette-item:hover {
+    background: #406;
+}
+
+.palette-tile-border {
+    padding: 6px;
+    border: 3px solid #888;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.palette-item:hover .palette-tile-border {
+    border-color: #fff;
+}
+
+.palette-title {
+    vertical-align: middle;
+    padding-left: 6px;
+    cursor: default;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.palette-item-selected .palette-title {
+    color: #eee;
+}
+
+.palette-item:hover .palette-title {
+    color: #fff;
+}
+
+.palette-item-selected .palette-tile-border {
+    border-color: #ddd;
+}
+
+.palette-tile {
+    width: 24px;
+    height: 24px;
+    background-image: url(i/tiles-3x.png);
+    background-repeat: no-repeat;
+}
