@@ -3,7 +3,7 @@
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/dark-hive/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="style.css" />
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="https://raw.github.com/carhartl/jquery-cookie/master/jquery.cookie.js"></script>
+<script src="lib/jquery.cookie.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/require.js/1.0.1/require.min.js"></script>
 <script>
@@ -140,19 +140,19 @@ $(function () {
 
     var tickInterval = 100;
     var tickTimer;
-    
+
     var run = false;
 
     var prngSeed = 1;
-    
+
     /*seed = (seed*9301+49297) % 233280;
     return seed/(233280.0);*/
-    
+
     function prng() {
         prngSeed = (prngSeed ^ 1337) * 0xECDAD ^ 0xDEADBEEF;
         return (prngSeed & 0xffff) / 0x10000;
     }
-    
+
     function explode(col, row) {
         for (var y = -1; y < 2; y++) {
             for (var x = -1; x < 2; x++) {
@@ -194,7 +194,7 @@ $(function () {
             }
         }
     }
-    
+
     var mapWidth = 25,
         mapHeight = 25,
         map = [],
@@ -205,13 +205,13 @@ $(function () {
 
     var ink;
 
-    var undoStates = [];    
-    
+    var undoStates = [];
+
     function save() {
         $.cookie("map", JSON.stringify(map), { expires: 365 });
         $.cookie("ps", prngSeed, { expires: 365 });
     }
-    
+
     function revert() {
         pushUndo();
         load();
@@ -225,16 +225,16 @@ $(function () {
     entities[1] = {
         name: "Soil"
     };
-    
-    var playerVec;
-    
+
+    var playerVec, playerVec2;
+
     entities[2] = entities[3] = entities[4] = entities[5] = {
         name: "Player",
         process: function (map, col, row) {
             if (!playerVec) {
                 return;
             }
-            
+
             var vec = playerVec;
 
             //var vec = neighVecs[Math.floor(prng() * 4)];
@@ -255,7 +255,7 @@ $(function () {
         name: "Zombie",
         process: function (map, col, row) {
             var converted = false;
-            
+
             neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
                 if (neigh >= 2 && neigh <= 5) {
@@ -264,12 +264,16 @@ $(function () {
                     converted = true;
                 }
             });
-            
+
             if (converted) {
                 return;
             }
-            
-            var vec = neighVecs[Math.floor(prng() * 4)];
+
+            //var vec = neighVecs[Math.floor(prng() * 4)];
+            if (!playerVec2) {
+                return;
+            }
+            var vec = playerVec2;
             if (map[row + vec.y][col + vec.x] === 0 || map[row + vec.y][col + vec.x] === 1 || map[row + vec.y][col + vec.x] === 28) {
                 var tile = map[row][col];
                 tile = tile + 1;
@@ -282,7 +286,7 @@ $(function () {
             }
         }
     };
-    
+
     entities[46] = {
         name: "Exploding Player",
         transition: true,
@@ -290,12 +294,12 @@ $(function () {
             crystallize(col, row);
         }
     };
-    
+
     entities[6] = entities[7] = entities[8] = entities[9] = {
         name: "Firefly",
         process: function (map, col, row) {
             var contact = false;
-            
+
             neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
                 if (neigh >= 2 && neigh <= 5) {
@@ -304,11 +308,11 @@ $(function () {
                     contact = true;
                 }
             });
-        
+
             if (contact) {
                 return;
             }
-            
+
             var bearing = map[row][col] - 6,
                 bearingVec = neighVecs[bearing],
                 hand = (bearing + 1) % 4,
@@ -326,7 +330,7 @@ $(function () {
             }
         }
     };
-    
+
     entities[10] = {
         name: "Exploding Firefly",
         transition: true,
@@ -339,7 +343,7 @@ $(function () {
         name: "Butterfly",
         process: function (map, col, row) {
             var contact = false;
-            
+
             neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
                 if (neigh >= 2 && neigh <= 5) {
@@ -348,7 +352,7 @@ $(function () {
                     contact = true;
                 }
             });
-        
+
             if (contact) {
                 return;
             }
@@ -378,7 +382,7 @@ $(function () {
             crystallize(col, row);
         }
     };
-    
+
     entities[28] = {
         name: "Diamond",
         process: function (map, col, row) {
@@ -399,7 +403,7 @@ $(function () {
             }
         }
     };
-    
+
     entities[29] = {
         name: "Falling Diamond",
         transition: true,
@@ -448,7 +452,7 @@ $(function () {
             }
         }
     };
-    
+
     entities[31] = {
         name: "Falling Boulder",
         transition: true,
@@ -487,12 +491,12 @@ $(function () {
     entities[37] = {
         name: "Enchanted Wall"
     };
-    
+
     entities[16] = entities[17] = entities[18] = entities[19] = {
         name: "Amoeba",
         process: function (map, col, row) {
             var stifle = 0;
-            
+
             neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
                 if (neigh >= 6 && neigh <= 9) {
@@ -514,18 +518,18 @@ $(function () {
                     stifle++;
                 }
             });
-            
+
             if (stifle < 4) {
                 var tile = map[row][col];
                 tile = tile + 1;
                 if (tile > 19) {
                     tile = 16;
                 }
-                map[row][col] = tile;           
+                map[row][col] = tile;
             } else {
                 map[row][col] = 48;
             }
-            
+
             // tile.allows(...)
             /*if (row < mapHeight - 1 && map[row + 1][col] === 0) {
                 map[row][col] = 0;
@@ -574,17 +578,17 @@ $(function () {
                     stifle++;
                 }
             });
-            
+
             if (stifle === 4) {
                 tile = tile + 1;
                 if (tile > 51) {
                     tile = 24;
                 }
-                map[row][col] = tile;           
+                map[row][col] = tile;
             }
         }
     };
-    
+
     entities[20] = entities[21] = entities[22] = entities[23] = {
         name: "Explosion",
         process: function (map, col, row) {
@@ -596,7 +600,7 @@ $(function () {
             map[row][col] = tile;
         }
     };
-    
+
     entities[24] = entities[25] = entities[26] = entities[27] = {
         name: "Crystallization",
         process: function (map, col, row) {
@@ -605,12 +609,12 @@ $(function () {
             map[row][col] = tile;
         }
     };
-    
+
     entities[42] = entities[43] = entities[44] = entities[45] = {
         name: "Space Amoeba",
         process: function (map, col, row) {
             var stifle = 0;
-           
+
             neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
                 if (neigh >= 2 && neigh <= 5) {
@@ -638,7 +642,7 @@ $(function () {
                     stifle++;
                 }
             });
-            
+
             if (stifle < 4) {
                 var tile = map[row][col];
                 tile = tile + 1;
@@ -657,7 +661,7 @@ $(function () {
             }*/
         }
     };
-    
+
     entities[52] = entities[53] = entities[54] = entities[55] = {
         name: "Stifled Space Amoeba",
         transition: true,
@@ -667,7 +671,7 @@ $(function () {
 
             neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
-                
+
                 if (neigh >= 2 && neigh <= 5) {
                     map[row + vec.y][col + vec.x] = 46;
                     processed[row + vec.y][col + vec.x] = ticks;
@@ -696,14 +700,14 @@ $(function () {
                     stifle++;
                 }
             });
-            
+
             if (stifle === 4) {
                 if (tile < 55) {
                 tile = tile + 1;
                 /*if (tile > 55) {
                     tile = 30;
                 }*/
-                map[row][col] = tile;           
+                map[row][col] = tile;
                 }
             }
         }
@@ -713,10 +717,10 @@ $(function () {
         name: "Fire",
         process: function (map, col, row) {
             var tile = map[row][col];
-            
+
             neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
-                
+
                 if (neigh >= 2 && neigh <= 5) {
                     map[row + vec.y][col + vec.x] = 46;
                     processed[row + vec.y][col + vec.x] = ticks;
@@ -740,25 +744,25 @@ $(function () {
                     processed[row + vec.y][col + vec.x] = ticks;
                 }*/
             });
-            
+
             tile = tile + 1;
-            
+
             if (tile > 61) {
                 tile = 60;
             }
-            
+
             map[row][col] = tile;
         }
     };
-    
+
     entities[64] = {
         name: "Wooden Wall",
         process: function (map, col, row) {
             var tile = map[row][col];
-            
+
             neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
-                
+
                 if (neigh >= 60 && neigh <= 61 || neigh >= 20 && neigh <= 23) {
                     map[row][col] = 93;
                 }
@@ -811,15 +815,15 @@ $(function () {
         transition: true,
         process: function (map, col, row) {
             var tile = map[row][col];
-            
+
             tile = tile + 1;
-            
+
             if (tile > 70) {
                 tile = 69;
             }
-            
+
             map[row][col] = tile;
-            
+
             if (map[row][col - 1] === 0) {
                 map[row][col - 1] = tile;
                 processed[row][col - 1] = ticks;
@@ -841,15 +845,15 @@ $(function () {
         transition: true,
         process: function (map, col, row) {
             var tile = map[row][col];
-            
+
             tile = tile + 1;
-            
+
             if (tile > 72) {
                 tile = 71;
             }
-            
+
             map[row][col] = tile;
-            
+
             if (map[row - 1][col] === 0) {
                 map[row - 1][col] = tile;
                 processed[row - 1][col] = ticks;
@@ -871,15 +875,15 @@ $(function () {
         transition: true,
         process: function (map, col, row) {
             var tile = map[row][col];
-            
+
             tile = tile + 1;
-            
+
             if (tile > 74) {
                 tile = 73;
             }
-            
+
             map[row][col] = tile;
-            
+
             // todo: do this by scanning neighs instead
             if (map[row - 1][col] === 0) {
                 map[row - 1][col] = 71 + tile - 73;
@@ -908,7 +912,7 @@ $(function () {
             }
         }
     };
-    
+
     entities[77] = {
         name: "Bomb",
         process: function (map, col, row) {
@@ -952,7 +956,7 @@ $(function () {
             if (!playerVec) {
                 return;
             }
-            
+
             var vec = playerVec;
 
             if (vec.x) {
@@ -978,7 +982,7 @@ $(function () {
             if (!playerVec) {
                 return;
             }
-            
+
             var vec = playerVec;
 
             if (vec.x) {
@@ -999,11 +1003,11 @@ $(function () {
                 map[row][col] = 85;
                 return;
             }
-        
+
             if (!playerVec) {
                 return;
             }
-            
+
             var vec = playerVec;
 
             /*if (vec.x) {
@@ -1039,7 +1043,7 @@ $(function () {
             if (!playerVec) {
                 return;
             }
-            
+
             var vec = playerVec;
 
             if (vec.x) {
@@ -1051,21 +1055,21 @@ $(function () {
             }
         }*/
     };
-    
+
     entities[85] = entities[86] = entities[87] = entities[88] = {
         name: "Active Magnet",
         transition: true,
         process: function (map, col, row) {
             var tile = map[row][col];
-            
+
             tile = tile + 1;
-            
+
             if (tile > 88) {
                 tile = 85;
             }
-            
+
             map[row][col] = tile;
-            
+
             if (map[row + 1][col] !== 30) {
                 map[row][col] = 83;
                 return;
@@ -1075,7 +1079,7 @@ $(function () {
                 processed[row + 1][col] = ticks;
                 return;
             }
-            
+
             var vec = playerVec;
 
             /*if (vec.x) {
@@ -1118,15 +1122,15 @@ $(function () {
         transition: true,
         process: function (map, col, row) {
             var tile = map[row][col];
-            
+
             tile = tile + 1;
-            
+
             if (tile > 92) {
                 tile = 89;
             }
-            
+
             map[row][col] = tile;
-            
+
             if (map[row + 1][col] !== 30) {
                 map[row][col] = 81;
                 return;
@@ -1136,7 +1140,7 @@ $(function () {
                 processed[row + 1][col] = ticks;
                 return;
             }
-            
+
             var vec = playerVec;
 
             if (vec.x) {
@@ -1148,7 +1152,7 @@ $(function () {
                     map[row + vec.y + 1][col + vec.x] = 30;
                     processed[row + vec.y + 1][col + vec.x] = ticks;
                 }
-            
+
             /*if (vec.x) {
                 if (map[row + vec.y][col + vec.x] === 0) {
                     map[row][col] = 0;
@@ -1168,23 +1172,23 @@ $(function () {
             processed[row + 1][col] = ticks;
         }
     };
-    
+
     entities[93] = entities[94] = entities[95] = {
         name: "Heating Wooden Wall",
         transition: true,
         process: function (map, col, row) {
             var tile = map[row][col],
                 ambientHeat = 0;
-            
+
             neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
-                
+
                 if (neigh >= 60 && neigh <= 61 || neigh >= 20 && neigh <= 23) {
                     ambientHeat++;
                 }
 
             });
-            
+
             if (ambientHeat > 0) {
                 tile++;
                 if (tile > 95) {
@@ -1200,7 +1204,7 @@ $(function () {
             map[row][col] = tile;
         }
     };
-    
+
     function resetProcessed() {
         for (var row = 0; row < mapHeight; row++) {
             processed[row] = [];
@@ -1220,7 +1224,7 @@ $(function () {
             }
         }
     }
-    
+
     function enforceBorders() {
         for (var row = 0; row < mapHeight; row++) {
             map[row][0] = map[row][mapWidth - 1] = 35;
@@ -1239,12 +1243,12 @@ $(function () {
         enforceBorders();
         drawMap();
     }
-    
+
     function load() {
         try {
             map = JSON.parse($.cookie("map"));
             prngSeed = parseInt($.cookie("ps"));
-            
+
             if (map === null || isNaN(prngSeed)) {
                 throw "Missing/invalid cookie";
             }
@@ -1253,24 +1257,24 @@ $(function () {
             clear();
             prngSeed = 1;
         }
-        
+
         resetProcessed();
         enforceBorders();
     }
-    
+
     load();
-   
+
     var stage = document.getElementById("stage");
     var ctx = stage.getContext("2d");
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    
+
     var tilesImg = new Image();
     tilesImg.src = "i/tiles-3x.png";
-    
+
     var tileSizeSrc = 24,
         tileSizeDest = 24;
-        
+
     function drawTile(tile, col, row) {
         ctx.drawImage(tilesImg,
             tile * tileSizeSrc, 0,
@@ -1278,7 +1282,7 @@ $(function () {
             col * tileSizeDest, row * tileSizeDest,
             tileSizeDest, tileSizeDest);
     }
-    
+
     function drawMap() {
         for (var row = 0; row < mapHeight; row++) {
             for (var col = 0; col < mapWidth; col++) {
@@ -1290,7 +1294,7 @@ $(function () {
             }
         }
     }
-    
+
     function processMap() {
         for (var row = 0; row < mapHeight; row++) {
             for (var col = 0; col < mapWidth; col++) {
@@ -1303,7 +1307,7 @@ $(function () {
 
         ticks = ticks + 1;
     }
-    
+
     var cursorBorder = 3;
 
     function drawCursor() {
@@ -1330,18 +1334,18 @@ $(function () {
             tickTimer = 0;
             return;
         }
-        
+
         processMap();
         drawMap();
         drawCursor();
         tickTimer = window.setTimeout(tick, tickInterval);
     }
-    
+
     function drawEntityPalette() {
         var palette = document.getElementById("palette"),
             tmplHtml = document.getElementById("tile-tmpl").innerHTML,
             prevEn;
-        
+
         entities.forEach(function (en, i) {
             if (en !== prevEn) {
                 if (!en.transition) {
@@ -1361,14 +1365,14 @@ $(function () {
             ink = $(this).data("tile");
         });
     }
-    
+
     tilesImg.onload = function () {
         drawEntityPalette();
         drawMap();
     };
-    
+
     var cursor = {};
-    
+
     stage.onmousemove = function (evt) {
         var col = Math.floor(evt.offsetX / tileSizeDest),
             row = Math.floor(evt.offsetY / tileSizeDest);
@@ -1376,7 +1380,7 @@ $(function () {
         if (cursor.col === col && cursor.row === row) {
             return;
         }
-        
+
         if (cursor.col >= 0) {
             drawTile(map[cursor.row][cursor.col], cursor.col, cursor.row);
         }
@@ -1388,13 +1392,13 @@ $(function () {
             map[row][col] = ink;
         }
     };
-    
+
     stage.onmouseout = function (evt) {
         mouseDown = false;
         drawTile(map[cursor.row][cursor.col], cursor.col, cursor.row);
         delete cursor.col;
     };
-    
+
     var mouseDown;
 
     function undo() {
@@ -1414,12 +1418,12 @@ $(function () {
             prngSeed: prngSeed
         });
     }
-    
+
     stage.onmousedown = function (evt) {
         evt.preventDefault();
-        
+
         pushUndo();
-        
+
         mouseDown = true;
 
         var col = Math.floor(evt.offsetX / tileSizeDest),
@@ -1432,11 +1436,11 @@ $(function () {
             map[row][col] = ink;
         }
     };
-    
+
     stage.onmouseup = function (evt) {
         mouseDown = false;
     };
-    
+
     $("#speed").slider({
         value: 0,
         animate: true,
@@ -1457,7 +1461,7 @@ $(function () {
             /*$("#revert").button("option", {
                 disabled: false
             });*/
-        
+
     $("#revert")
         .button({
             //disabled: true,
@@ -1466,7 +1470,7 @@ $(function () {
             }
         })
         .click(revert);
-        
+
     $("#reset")
         .button({
             icons: {
@@ -1505,7 +1509,7 @@ $(function () {
             }
         }
     }
-    
+
     $("#play")
         .button({
             icons: {
@@ -1523,11 +1527,11 @@ $(function () {
         default:
             return;
         }
-        
+
     });*/
 
     var keyVecs = [{
-        key: KeyEvent.DOM_VK_LEFT, 
+        key: KeyEvent.DOM_VK_LEFT,
         x: -1,
         y: 0
     }, {
@@ -1543,23 +1547,49 @@ $(function () {
         x: 0,
         y: 1
     }];
-    
+
     keyVecs.forEach(function (vec) {
         keyVecs[vec.key] = vec;
     });
-    
+
+    var keyVecs2 = [{
+        key: KeyEvent.DOM_VK_A,
+        x: -1,
+        y: 0
+    }, {
+        key: KeyEvent.DOM_VK_W,
+        x: 0,
+        y: -1
+    }, {
+        key: KeyEvent.DOM_VK_D,
+        x: 1,
+        y: 0
+    }, {
+        key: KeyEvent.DOM_VK_S,
+        x: 0,
+        y: 1
+    }];
+
+    keyVecs2.forEach(function (vec) {
+        keyVecs2[vec.key] = vec;
+    });
+
     function arrowKeyDown(key) {
         playerVec = keyVecs[key];
+        playerVec2 = keyVecs2[key];
     }
-    
+
     function arrowKeyUp(key) {
         if (playerVec === keyVecs[key]) {
             playerVec = null;
         }
+        if (playerVec2 === keyVecs2[key]) {
+            playerVec2 = null;
+        }
     }
-    
+
     $(document).keydown(function (evt) {
-        if (keyVecs[evt.which]) {
+        if (keyVecs[evt.which] || keyVecs2[evt.which]) {
             arrowKeyDown(evt.which);
         } else {
             switch (evt.which) {
@@ -1574,12 +1604,12 @@ $(function () {
                 return;
             }
         }
-        
-        evt.preventDefault();        
+
+        evt.preventDefault();
     });
-    
+
     $(document).keyup(function (evt) {
-        if (keyVecs[evt.which]) {
+        if (keyVecs[evt.which] || keyVecs2[evt.which]) {
             arrowKeyUp(evt.which);
         }
     });
