@@ -1576,21 +1576,29 @@ $(function () {
 
     function arrowKeyDown(key) {
         playerVec = keyVecs[key];
-        playerVec2 = keyVecs2[key];
     }
 
     function arrowKeyUp(key) {
         if (playerVec === keyVecs[key]) {
             playerVec = null;
         }
+    }
+
+    function arrowKeyDown2(key) {
+        playerVec2 = keyVecs2[key];
+    }
+
+    function arrowKeyUp2(key) {
         if (playerVec2 === keyVecs2[key]) {
             playerVec2 = null;
         }
     }
 
     $(document).keydown(function (evt) {
-        if (keyVecs[evt.which] || keyVecs2[evt.which]) {
+        if (keyVecs[evt.which]) {
             arrowKeyDown(evt.which);
+        } else if (keyVecs2[evt.which]) {
+            arrowKeyDown2(evt.which);
         } else {
             switch (evt.which) {
             case KeyEvent.DOM_VK_BACK_SPACE:
@@ -1609,8 +1617,10 @@ $(function () {
     });
 
     $(document).keyup(function (evt) {
-        if (keyVecs[evt.which] || keyVecs2[evt.which]) {
+        if (keyVecs[evt.which]) {
             arrowKeyUp(evt.which);
+        } else if (keyVecs2[evt.which]) {
+            arrowKeyUp2(evt.which);
         }
     });
 });
