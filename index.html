@@ -219,17 +219,20 @@ $(function () {
     }
 
     entities[0] = {
-        name: "Emptiness"
+        name: "Emptiness",
+        on: { move: true }
     };
 
     entities[1] = {
-        name: "Soil"
+        name: "Soil",
+        on: { dig: true }
     };
 
     var playerVec, playerVec2;
 
     entities[2] = entities[3] = entities[4] = entities[5] = {
         name: "Player",
+        can: { move: true, dig: true, collect: true },
         process: function (map, col, row) {
             if (!playerVec) {
                 return;
@@ -237,16 +240,12 @@ $(function () {
 
             var vec = playerVec;
 
-            //var vec = neighVecs[Math.floor(prng() * 4)];
-            if (map[row + vec.y][col + vec.x] === 0 || map[row + vec.y][col + vec.x] === 1 || map[row + vec.y][col + vec.x] === 28) {
-                var tile = map[row][col];
-                tile = tile + 1;
-                if (tile > 5) {
-                    tile = 2;
-                }
-                map[row][col] = 0;
-                map[row + vec.y][col + vec.x] = tile;
-                processed[row + vec.y][col + vec.x] = ticks;
+            if (this.moveTo(vec)) {
+                // todo: cycle tile
+                //     tile = tile + 1;
+                //     if (tile > 5) {
+                //         tile = 2;
+                //     }
             }
         }
     };
@@ -385,6 +384,7 @@ $(function () {
 
     entities[28] = {
         name: "Diamond",
+        on: { collect: true },
         process: function (map, col, row) {
             if (map[row + 1][col] === 0) {
                 map[row][col] = 0;
@@ -1300,7 +1300,25 @@ $(function () {
             for (var col = 0; col < mapWidth; col++) {
                 if (processed[row][col] < ticks) {
                     var entity = entities[map[row][col]];
-                    entity && entity.process && entity.process(map, col, row);
+                    entity && entity.process && entity.process.call({
+                        moveTo: function (vec) {
+                            var targetCol = col + vec.x,
+                                targetRow = row + vec.y,
+                                targetEntity = entities[map[targetRow][targetCol]];
+
+                            if (targetEntity.on) {
+                                for (var ability in targetEntity.on) {
+                                    if (entity.can[ability]) {
+                                        map[targetRow][targetCol] = map[row][col];
+                                        processed[targetRow][targetCol] = ticks;
+                                        map[row][col] = 0;
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+                    }, map, col, row);
                 }
             }
         }
