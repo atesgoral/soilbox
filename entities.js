@@ -416,7 +416,7 @@ define(function () {
                     map[row + vec.y][col + vec.x] = 52; // wake up stifled neigh
                     this.processed[row + vec.y][col + vec.x] = this.ticks;
                     stifle++;
-                } else if (neigh === 0 || neigh === 1) {
+                } else if (neigh === 0 || neigh === 1 || neigh === 97) {
                     if (this.prng() < 0.01) {
                         map[row + vec.y][col + vec.x] = 42;
                         this.processed[row + vec.y][col + vec.x] = this.ticks;
@@ -986,6 +986,10 @@ define(function () {
 
             map[row][col] = tile;
         }
+    };
+
+    entities[97] = {
+        name: "Space Soil"
     };
 
     return entities;
