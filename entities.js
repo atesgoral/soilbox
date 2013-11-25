@@ -1,4 +1,6 @@
 define(function () {
+    "use strict";
+
     var entities = [];
 
     entities[0] = {
@@ -36,7 +38,7 @@ define(function () {
         process: function (map, col, row) {
             var converted = false;
 
-            neighVecs.forEach(function (vec) {
+            this.neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
                 if (neigh >= 2 && neigh <= 5) {
                     map[row + vec.y][col + vec.x] = 56;
@@ -49,7 +51,7 @@ define(function () {
                 return;
             }
 
-            //var vec = neighVecs[Math.floor(prng() * 4)];
+            //var vec = this.neighVecs[Math.floor(prng() * 4)];
             if (!this.playerVec2) {
                 return;
             }
@@ -80,7 +82,7 @@ define(function () {
         process: function (map, col, row) {
             var contact = false;
 
-            neighVecs.forEach(function (vec) {
+            this.neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
                 if (neigh >= 2 && neigh <= 5) {
                     map[row + vec.y][col + vec.x] = 46;
@@ -94,9 +96,9 @@ define(function () {
             }
 
             var bearing = map[row][col] - 6,
-                bearingVec = neighVecs[bearing],
+                bearingVec = this.neighVecs[bearing],
                 hand = (bearing + 1) % 4,
-                handVec = neighVecs[hand];
+                handVec = this.neighVecs[hand];
             if (map[row + handVec.y][col + handVec.x] === 0) {
                 map[row][col] = 0;
                 map[row + handVec.y][col + handVec.x] = 6 + hand;
@@ -106,7 +108,7 @@ define(function () {
                 map[row + bearingVec.y][col + bearingVec.x] = 6 + bearing;
                 this.processed[row + bearingVec.y][col + bearingVec.x] = this.ticks;
             } else {
-                map[row][col] = 6 + ((bearing + 3) % 4)
+                map[row][col] = 6 + ((bearing + 3) % 4);
             }
         }
     };
@@ -124,7 +126,7 @@ define(function () {
         process: function (map, col, row) {
             var contact = false;
 
-            neighVecs.forEach(function (vec) {
+            this.neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
                 if (neigh >= 2 && neigh <= 5) {
                     map[row + vec.y][col + vec.x] = 46;
@@ -138,9 +140,9 @@ define(function () {
             }
 
             var bearing = map[row][col] - 11,
-                bearingVec = neighVecs[bearing],
+                bearingVec = this.neighVecs[bearing],
                 hand = (bearing + 3) % 4,
-                handVec = neighVecs[hand];
+                handVec = this.neighVecs[hand];
             if (map[row + handVec.y][col + handVec.x] === 0) {
                 map[row][col] = 0;
                 map[row + handVec.y][col + handVec.x] = 11 + hand;
@@ -278,7 +280,7 @@ define(function () {
         process: function (map, col, row) {
             var stifle = 0;
 
-            neighVecs.forEach(function (vec) {
+            this.neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
                 if (neigh >= 6 && neigh <= 9) {
                     map[row + vec.y][col + vec.x] = 10;
@@ -335,7 +337,7 @@ define(function () {
             var stifle = 0;
             var tile = map[row][col];
 
-            neighVecs.forEach(function (vec) {
+            this.neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
                 if (neigh >= 6 && neigh <= 9) {
                     map[row + vec.y][col + vec.x] = 10;
@@ -396,7 +398,7 @@ define(function () {
         process: function (map, col, row) {
             var stifle = 0;
 
-            neighVecs.forEach(function (vec) {
+            this.neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
                 if (neigh >= 2 && neigh <= 5) {
                     map[row + vec.y][col + vec.x] = 46;
@@ -450,7 +452,7 @@ define(function () {
             var stifle = 0;
             var tile = map[row][col];
 
-            neighVecs.forEach(function (vec) {
+            this.neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
 
                 if (neigh >= 2 && neigh <= 5) {
@@ -499,7 +501,7 @@ define(function () {
         process: function (map, col, row) {
             var tile = map[row][col];
 
-            neighVecs.forEach(function (vec) {
+            this.neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
 
                 if (neigh >= 2 && neigh <= 5) {
@@ -541,7 +543,7 @@ define(function () {
         process: function (map, col, row) {
             var tile = map[row][col];
 
-            neighVecs.forEach(function (vec) {
+            this.neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
 
                 if (neigh >= 60 && neigh <= 61 || neigh >= 20 && neigh <= 23) {
@@ -961,7 +963,7 @@ define(function () {
             var tile = map[row][col],
                 ambientHeat = 0;
 
-            neighVecs.forEach(function (vec) {
+            this.neighVecs.forEach(function (vec) {
                 var neigh = map[row + vec.y][col + vec.x];
 
                 if (neigh >= 60 && neigh <= 61 || neigh >= 20 && neigh <= 23) {
