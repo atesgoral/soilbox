@@ -19,7 +19,7 @@ requirejs.config({
     }
 });
 
-require([ "jquery", "entities", "jquery-ui", "jquery.cookie" ], function ($, entities) {
+require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function ($, entities, ui) {
     "use strict";
 
     $(function () {
@@ -111,8 +111,6 @@ require([ "jquery", "entities", "jquery-ui", "jquery.cookie" ], function ($, ent
             drawMap();
         }
 
-        var playerVec, playerVec2;
-
         function resetProcessed() {
             for (var row = 0; row < mapHeight; row++) {
                 processed[row] = [];
@@ -155,7 +153,7 @@ require([ "jquery", "entities", "jquery-ui", "jquery.cookie" ], function ($, ent
         function load() {
             try {
                 map = JSON.parse($.cookie("map"));
-                prngSeed = parseInt($.cookie("ps"));
+                prngSeed = parseInt($.cookie("ps"), 10);
 
                 if (map === null || isNaN(prngSeed)) {
                     throw "Missing/invalid cookie";
@@ -210,8 +208,8 @@ require([ "jquery", "entities", "jquery-ui", "jquery.cookie" ], function ($, ent
                         var entity = entities[map[row][col]];
                         entity && entity.process && entity.process.call({
                             neighVecs: neighVecs,
-                            playerVec: playerVec,
-                            playerVec2: playerVec2,
+                            playerVec: ui.playerVec,
+                            playerVec2: ui.playerVec2,
                             processed: processed,
                             ticks: ticks,
                             crystallize: crystallize,
@@ -244,8 +242,7 @@ require([ "jquery", "entities", "jquery-ui", "jquery.cookie" ], function ($, ent
         var cursorBorder = 3;
 
         function drawCursor() {
-            if (ink >= 0 && cursor.col > 0 && cursor.col < mapWidth - 1
-                && cursor.row > 0 && cursor.row < mapHeight - 1) {
+            if (ink >= 0 && cursor.col > 0 && cursor.col < mapWidth - 1 && cursor.row > 0 && cursor.row < mapHeight - 1) {
                 drawTile(ink, cursor.col, cursor.row);
                 ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
                 ctx.fillRect(
@@ -463,99 +460,10 @@ require([ "jquery", "entities", "jquery-ui", "jquery.cookie" ], function ($, ent
 
         });*/
 
-        var keyVecs = [{
-            key: $.ui.keyCode.LEFT,
-            x: -1,
-            y: 0
-        }, {
-            key: $.ui.keyCode.UP,
-            x: 0,
-            y: -1
-        }, {
-            key: $.ui.keyCode.RIGHT,
-            x: 1,
-            y: 0
-        }, {
-            key: $.ui.keyCode.DOWN,
-            x: 0,
-            y: 1
-        }];
+        ui.initialize();
 
-        keyVecs.forEach(function (vec) {
-            keyVecs[vec.key] = vec;
-        });
-
-        var keyVecs2 = [{
-            key: "A".charCodeAt(0),
-            x: -1,
-            y: 0
-        }, {
-            key: "W".charCodeAt(0),
-            x: 0,
-            y: -1
-        }, {
-            key: "D".charCodeAt(0),
-            x: 1,
-            y: 0
-        }, {
-            key: "S".charCodeAt(0),
-            x: 0,
-            y: 1
-        }];
-
-        keyVecs2.forEach(function (vec) {
-            keyVecs2[vec.key] = vec;
-        });
-
-        function arrowKeyDown(key) {
-            playerVec = keyVecs[key];
-        }
-
-        function arrowKeyUp(key) {
-            if (playerVec === keyVecs[key]) {
-                playerVec = null;
-            }
-        }
-
-        function arrowKeyDown2(key) {
-            playerVec2 = keyVecs2[key];
-        }
-
-        function arrowKeyUp2(key) {
-            if (playerVec2 === keyVecs2[key]) {
-                playerVec2 = null;
-            }
-        }
-
-        $(document).keydown(function (evt) {
-            if (keyVecs[evt.which]) {
-                arrowKeyDown(evt.which);
-            } else if (keyVecs2[evt.which]) {
-                arrowKeyDown2(evt.which);
-            } else {
-                switch (evt.which) {
-                case $.ui.keyCode.BACKSPACE:
-                    undo();
-                    break;
-                case $.ui.keyCode.SPACE:
-                    togglePause();
-                    break;
-                default:
-                    return;
-                }
-            }
-
-            evt.preventDefault();
-        });
-
-        $(document).keyup(function (evt) {
-            if (keyVecs[evt.which]) {
-                arrowKeyUp(evt.which);
-            } else if (keyVecs2[evt.which]) {
-                arrowKeyUp2(evt.which);
-            }
-        });
+        $(ui)
+            .on("undo", undo)
+            .on("togglePause", togglePause);
     });
-
 });
-
