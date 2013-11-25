@@ -90,6 +90,16 @@ require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function (
             }
         }
 
+        function floodFill(col, row, find, replace) {
+            if (map[row][col] === find && col > 0 && col < mapWidth - 1 && row > 0 && row < mapHeight - 1) {
+                map[row][col] = replace;
+
+                neighVecs.forEach(function (vec) {
+                    floodFill(col + vec.x, row + vec.y, find, replace);
+                });
+            }
+        }
+
         var mapWidth = 25,
             mapHeight = 25,
             map = [],
@@ -207,6 +217,7 @@ require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function (
                     if (processed[row][col] < ticks) {
                         var entity = entities[map[row][col]];
                         entity && entity.process && entity.process.call({
+                            prng: prng,
                             neighVecs: neighVecs,
                             playerVec: ui.playerVec,
                             playerVec2: ui.playerVec2,
@@ -363,7 +374,15 @@ require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function (
             cursor.row = row;
 
             if (drawCursor()) {
-                map[row][col] = ink;
+                if (evt.shiftKey) {
+                    var entity = map[row][col];
+                    if (entity !== ink) {
+                        floodFill(col, row, entity, ink);
+                        drawMap();
+                    }
+                } else {
+                    map[row][col] = ink;
+                }
             }
         };
 

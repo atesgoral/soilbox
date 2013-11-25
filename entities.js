@@ -51,7 +51,7 @@ define(function () {
                 return;
             }
 
-            //var vec = this.neighVecs[Math.floor(prng() * 4)];
+            //var vec = this.neighVecs[Math.floor(this.prng() * 4)];
             if (!this.playerVec2) {
                 return;
             }
@@ -293,7 +293,7 @@ define(function () {
                     this.processed[row + vec.y][col + vec.x] = this.ticks;
                     stifle++;
                 } else if (neigh === 0 || neigh === 1) {
-                    if (prng() < 0.01) {
+                    if (this.prng() < 0.01) {
                         map[row + vec.y][col + vec.x] = 16;
                         this.processed[row + vec.y][col + vec.x] = this.ticks;
                     }
@@ -417,7 +417,7 @@ define(function () {
                     this.processed[row + vec.y][col + vec.x] = this.ticks;
                     stifle++;
                 } else if (neigh === 0 || neigh === 1) {
-                    if (prng() < 0.01) {
+                    if (this.prng() < 0.01) {
                         map[row + vec.y][col + vec.x] = 42;
                         this.processed[row + vec.y][col + vec.x] = this.ticks;
                     }
