@@ -13,6 +13,15 @@ define(function () {
         on: { dig: true }
     };
 
+    var move = {
+        player: function (n) {
+
+        },
+        random: function () {
+
+        }
+    };
+
     entities[2] = entities[3] = entities[4] = entities[5] = {
         name: "Player",
         can: { move: true, dig: true, collect: true },
@@ -35,6 +44,7 @@ define(function () {
 
     entities[56] = entities[57] = entities[58] = entities[59] = {
         name: "Zombie",
+        can: { move: move.random(), dig: true, collect: true },
         process: function (map, col, row) {
             var converted = false;
 

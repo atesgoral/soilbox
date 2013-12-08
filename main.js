@@ -216,6 +216,17 @@ require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function (
                 for (var col = 0; col < mapWidth; col++) {
                     if (processed[row][col] < ticks) {
                         var entity = entities[map[row][col]];
+
+                        /*
+                        if (entity && entity.can && entity.can.move) {
+                            interactions with other entity types,
+                            based on direction, preference,
+                            so, could be chainged function calls, or an array of interactions
+                            interactions: [
+                            ]
+                        }
+                        */
+
                         entity && entity.process && entity.process.call({
                             prng: prng,
                             neighVecs: neighVecs,
