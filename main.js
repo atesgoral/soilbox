@@ -1,10 +1,14 @@
 requirejs.config({
     paths: {
+        "createjs": "http://code.createjs.com/createjs-2013.09.25.min",
         "jquery": "lib/jquery/jquery-1.10.2.min",
         "jquery-ui": "lib/jquery-ui/jquery-ui-1.10.3.min",
         "jquery.cookie": "lib/jquery.cookie/jquery.cookie"
     },
     shim: {
+        "createjs": {
+            exports: "createjs"
+        },
         "jquery": {
             exports: "jQuery"
         },
@@ -19,7 +23,7 @@ requirejs.config({
     }
 });
 
-require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function ($, entities, ui) {
+require([ "createjs", "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function (createjs, $, entities, ui) {
     "use strict";
 
     $(function () {
@@ -180,10 +184,13 @@ require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function (
 
         load();
 
-        var stage = document.getElementById("stage");
-        var ctx = stage.getContext("2d");
-        ctx.fillStyle = "#000000";
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        var stage = new createjs.Stage("stage");
+
+        //stage.enableMouseOver();
+
+        // var ctx = stage.getContext("2d");
+        // ctx.fillStyle = "#000000";
+        // ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
         var tilesImg = new Image();
         tilesImg.src = "i/tiles-3x.png";
@@ -192,21 +199,21 @@ require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function (
             tileSizeDest = 24;
 
         function drawTile(tile, col, row) {
-            ctx.drawImage(tilesImg,
-                tile * tileSizeSrc, 0,
-                tileSizeSrc, tileSizeSrc,
-                col * tileSizeDest, row * tileSizeDest,
-                tileSizeDest, tileSizeDest);
+            // ctx.drawImage(tilesImg,
+            //     tile * tileSizeSrc, 0,
+            //     tileSizeSrc, tileSizeSrc,
+            //     col * tileSizeDest, row * tileSizeDest,
+            //     tileSizeDest, tileSizeDest);
         }
 
         function drawMap() {
             for (var row = 0; row < mapHeight; row++) {
                 for (var col = 0; col < mapWidth; col++) {
-                    ctx.drawImage(tilesImg,
-                        map[row][col] * tileSizeSrc, 0,
-                        tileSizeSrc, tileSizeSrc,
-                        col * tileSizeDest, row * tileSizeDest,
-                        tileSizeDest, tileSizeDest);
+                    // ctx.drawImage(tilesImg,
+                    //     map[row][col] * tileSizeSrc, 0,
+                    //     tileSizeSrc, tileSizeSrc,
+                    //     col * tileSizeDest, row * tileSizeDest,
+                    //     tileSizeDest, tileSizeDest);
                 }
             }
         }
@@ -255,15 +262,24 @@ require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function (
         function drawCursor() {
             if (ink >= 0 && cursor.col > 0 && cursor.col < mapWidth - 1 && cursor.row > 0 && cursor.row < mapHeight - 1) {
                 drawTile(ink, cursor.col, cursor.row);
-                ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
-                ctx.fillRect(
-                    cursor.col * tileSizeDest, cursor.row * tileSizeDest,
-                    tileSizeDest, tileSizeDest);
-                ctx.strokeStyle = "#fff";
-                ctx.lineWidth = 1;
-                ctx.strokeRect(
-                    cursor.col * tileSizeDest + 0.5, cursor.row * tileSizeDest + 0.5,
-                    tileSizeDest - 1, tileSizeDest - 1);
+
+                var cursorOverlay = new createjs.Shape();
+                cursorOverlay.graphics
+                    .beginFill("rgba(255, 255, 255, 0.25)")
+                    .drawRect(0, 0, tileSizeDest, tileSizeDest);
+                cursorOverlay.x = cursor.col * tileSizeDest;
+                cursorOverlay.y = cursor.row * tileSizeDest;
+                stage.addChild(cursorOverlay);
+                // ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+                // ctx.fillRect(
+                //     cursor.col * tileSizeDest, cursor.row * tileSizeDest,
+                //     tileSizeDest, tileSizeDest);
+                // ctx.strokeStyle = "#fff";
+                // ctx.lineWidth = 1;
+                // ctx.strokeRect(
+                //     cursor.col * tileSizeDest + 0.5, cursor.row * tileSizeDest + 0.5,
+                //     tileSizeDest - 1, tileSizeDest - 1);
+                stage.update();
                 return true;
             } else {
                 return false;
@@ -314,7 +330,7 @@ require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function (
 
         var cursor = {};
 
-        stage.onmousemove = function (evt) {
+        $("#stage").on("mousemove", function (evt) {
             var col = Math.floor(evt.offsetX / tileSizeDest),
                 row = Math.floor(evt.offsetY / tileSizeDest);
 
@@ -332,13 +348,13 @@ require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function (
             if (drawCursor() && mouseDown) {
                 map[row][col] = ink;
             }
-        };
+        });
 
-        stage.onmouseout = function (evt) {
+        $("#stage").on("mouseout", function (evt) {
             mouseDown = false;
             drawTile(map[cursor.row][cursor.col], cursor.col, cursor.row);
             delete cursor.col;
-        };
+        });
 
         var mouseDown;
 
@@ -360,7 +376,7 @@ require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function (
             });
         }
 
-        stage.onmousedown = function (evt) {
+        $("#stage").on("mousedown", function (evt) {
             evt.preventDefault();
 
             pushUndo();
@@ -384,11 +400,11 @@ require([ "jquery", "entities", "ui", "jquery-ui", "jquery.cookie" ], function (
                     map[row][col] = ink;
                 }
             }
-        };
+        });
 
-        stage.onmouseup = function (evt) {
+        $("#stage").on("mouseup", function (evt) {
             mouseDown = false;
-        };
+        });
 
         $("#speed").slider({
             value: 0,
