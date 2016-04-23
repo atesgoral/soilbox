@@ -302,16 +302,16 @@ define(function () {
                 }
             }, this);
 
-            if (stifle < 4) {
+            // if (stifle < 4) {
                 var tile = map[row][col];
                 tile = tile + 1;
                 if (tile > 19) {
                     tile = 16;
                 }
                 map[row][col] = tile;
-            } else {
-                map[row][col] = 48;
-            }
+            // } else {
+            //     map[row][col] = 48;
+            // }
 
             // tile.allows(...)
             /*if (row < mapHeight - 1 && map[row + 1][col] === 0) {
@@ -426,16 +426,16 @@ define(function () {
                 }
             }, this);
 
-            if (stifle < 4) {
+            // if (stifle < 4) {
                 var tile = map[row][col];
                 tile = tile + 1;
                 if (tile > 45) {
                     tile = 42;
                 }
                 map[row][col] = tile;
-            } else {
-                map[row][col] = 52;
-            }
+            // } else {
+            //     map[row][col] = 52;
+            // }
             // tile.allows(...)
             /*if (row < mapHeight - 1 && map[row + 1][col] === 0) {
                 map[row][col] = 0;
