@@ -2,7 +2,6 @@
   "name": "soilbox",
   "version": "0.0.1",
   "dependencies": {
-    "express": "~3.1.2",
-    "mongodb": "1.1.11"
+    "express": "~3.1.2"
   }
 }
