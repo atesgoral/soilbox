@@ -7,29 +7,29 @@
 </head>
 <body>
 <div id="header">
-    <div id="buttonbar">
-        <button id="save">Save</button>
-        <button id="revert">Revert</button>
-        <button id="reset">Reset</button>
-        <button id="undo">Undo</button>
-        <button id="play">Play</button>
-    </div>
-    <div id="speed"></div>
+  <div id="buttonbar">
+    <button id="save">Save</button>
+    <button id="revert">Revert</button>
+    <button id="reset">Reset</button>
+    <button id="undo">Undo</button>
+    <button id="play">Play</button>
+  </div>
+  <div id="speed"></div>
 </div>
 <div id="content">
-    <canvas id="stage" width="600" height="600"></canvas>
-    <div id="palette"></div>
+  <canvas id="stage" width="600" height="600"></canvas>
+  <div id="palette"></div>
 </div>
 <div id="templates">
-    <div id="tile-tmpl">
-        <a class="palette-item" data-tile="${tile}">
-            <span class="palette-tile-border">
-                <div class="palette-tile" style="background-position: -${bgoffset}px 0">
-                </div>
-            </span>
-            <span class="palette-title">${title}</span>
-        </a>
-    </div>
+  <div id="tile-tmpl">
+    <a class="palette-item" data-tile="${tile}">
+      <span class="palette-tile-border">
+        <div class="palette-tile" style="background-position: -${bgoffset}px 0">
+        </div>
+      </span>
+      <span class="palette-title">${title}</span>
+    </a>
+  </div>
 </div>
 </body>
 </html>
