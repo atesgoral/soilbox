@@ -1,10 +1,16 @@
-var express = require("express");
-var app = express();
+const express = require('express');
+const expressId = require('express-id');
+const shortid = require('shortid');
 
-app.use(express.logger());
+const app = express();
 
-app.use("/", express.static(__dirname));
+app.get('/', expressId(() => shortid.generate() + '/1/'));
 
-var server = app.listen(process.env.PORT || 5000, function() {
-    console.log("Listening on " + server.address().port);
+app.get('/:id/:rev/*', (req, res) => {
+    res.sendFile(req.params[0] || 'index.html', { root: './ui' });
 });
+
+var server = app.listen(process.env.PORT || 5000, () => {
+    console.log('Listening on ' + server.address().port);
+});
+
